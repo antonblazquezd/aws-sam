@@ -1,0 +1,157 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  lamda local demo
+
+Resources:
+  LambdaDemoFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambda/
+      Handler: lambda.lambdaHandler
+      Runtime: nodejs12.x
+
+
+  #---------------
+  #     Users
+  #---------------
+
+  ApiGatewayFunctionGetUserById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: apigateway/ # format is projectPath/
+      Handler: user.getUserById # format is filename.functionName
+      Layers:
+        - !Ref AppLayer
+      Runtime: nodejs12.x
+      Events:
+        GetOkele:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /users/{userId}
+            Method: get
+
+  ApiGatewayFunctionGetUsers:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: apigateway/
+      Handler: user.getUsers
+      Layers:
+        - !Ref AppLayer
+      Runtime: nodejs12.x
+      Events:
+        GetOkele:
+          Type: Api
+          Properties:
+            Path: /users
+            Method: get
+
+  ApiGatewayFunctionPostUser:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: apigateway/
+      Handler: user.postUser
+      Layers:
+        - !Ref AppLayer
+      Runtime: nodejs12.x
+      Events:
+        GetOkele:
+          Type: Api
+          Properties:
+            Path: /users
+            Method: post
+
+
+  #---------------
+  #     Wallets
+  #---------------
+
+  ApiGatewayFunctionGetWalletById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: apigateway/
+      Handler: wallet.getWalletById
+      Layers:
+        - !Ref AppLayer
+      Runtime: nodejs12.x
+      Events:
+        GetOkele:
+          Type: Api
+          Properties:
+            Path: /users/{userId}/wallets/{walletId}
+            Method: get
+
+  ApiGatewayFunctionGetWallets:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: apigateway/
+      Handler: wallet.getWallets
+      Layers:
+        - !Ref AppLayer
+      Runtime: nodejs12.x
+      Events:
+        GetOkele:
+          Type: Api
+          Properties:
+            Path: /users/{userId}/wallets
+            Method: get
+
+  ApiGatewayFunctionPostWallet:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: apigateway/
+      Handler: wallet.postWallet
+      Layers:
+        - !Ref AppLayer
+      Runtime: nodejs12.x
+      Events:
+        GetOkele:
+          Type: Api
+          Properties:
+            Path: /users/{userId}/wallets
+            Method: post
+
+
+  #---------------
+  #     AppLayers
+  #---------------
+
+  AppLayer:
+    Type: AWS::Serverless::LayerVersion
+    Metadata:
+      BuildMethod: nodejs14.x
+    Properties:
+      LayerName: app-layer
+      Description: A layer for the application
+      ContentUri: layers/app-layer
+      CompatibleRuntimes:
+        - nodejs14.x
+
+
+  #---------------
+  #     DynamoDBTables
+  #---------------
+
+  UserTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: id
+        Type: String
+      TableName: User
+
+  WalletTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: id
+        Type: String
+      TableName: Wallet
+
+  OperationTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: id
+        Type: String
+      TableName: Operation
