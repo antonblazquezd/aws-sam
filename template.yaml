@@ -112,6 +112,56 @@ Resources:
             Method: post
 
 
+#---------------
+#     Assets
+#---------------
+
+  ApiGatewayFunctionGetAssetById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: apigateway/
+      Handler: asset.getAssetById
+      Layers:
+        - !Ref AppLayer
+      Runtime: nodejs12.x
+      Events:
+        GetOkele:
+          Type: Api
+          Properties:
+            Path: /assets/{assetId}
+            Method: get
+
+  ApiGatewayFunctionGetAssets:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: apigateway/
+      Handler: asset.getAssets
+      Layers:
+        - !Ref AppLayer
+      Runtime: nodejs12.x
+      Events:
+        GetOkele:
+          Type: Api
+          Properties:
+            Path: /assets
+            Method: get
+
+  # Only for testing
+  ApiGatewayFunctionPostAsset:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: apigateway/
+      Handler: asset.postAsset
+      Layers:
+        - !Ref AppLayer
+      Runtime: nodejs12.x
+      Events:
+        GetOkele:
+          Type: Api
+          Properties:
+            Path: /assets
+            Method: post
+
   #---------------
   #     AppLayers
   #---------------
