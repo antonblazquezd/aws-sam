@@ -1,0 +1,471 @@
+openapi: 3.0.3
+info:
+  title: Swagger  - OpenAPI 3.0
+  description: |-
+    This is a sample Pet Store Server based on the OpenAPI 3.0 specification.  You can find out more about
+    Swagger at [https://swagger.io](https://swagger.io). In the third iteration of the pet store, we've switched to the design first approach!
+    You can now help us improve the API whether it's by making changes to the definition itself or to the code.
+    That way, with time, we can improve the API in general, and expose some of the new features in OAS3.
+
+    _If you're looking for the Swagger 2.0/OAS 2.0 version of Petstore, then click [here](https://editor.swagger.io/?url=https://petstore.swagger.io/v2/swagger.yaml). Alternatively, you can load via the `Edit > Load Petstore OAS 2.0` menu option!_
+    
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: apiteam@swagger.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.11
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: https://swagger.io/api/v3
+tags:
+  - name: User
+    description: User endpoint
+  - name: Wallet
+    description: Wallet endpoint
+  - name: Asset
+    description: Asset endpoint
+paths:
+  /users:
+    post:
+      tags:
+        - User
+      summary: Create user
+      description: ''
+      operationId: createUser
+      requestBody:
+        description: Create user 
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/IdResponse'
+    get:
+      tags:
+        - User
+      summary: Get all users
+      description: ''
+      operationId: loginUser
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserGetResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/UserGetResponse'
+        '400':
+          description: Invalid user id supplied
+  /users/{userId}:
+    get:
+      tags:
+        - User
+      summary: Get user by user id
+      description: ''
+      operationId: getUserByName
+      parameters:
+        - name: userId
+          in: path
+          description: 'Identifier of the user'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserGetByIdResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/UserGetByIdResponse'
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
+    put:
+      tags:
+        - User
+      summary: Update user
+      description: ''
+      operationId: updateUser
+      parameters:
+        - name: userId
+          in: path
+          description: 'Identifier of the user'
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Update an existent user
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        default:
+          description: successful operation
+          
+  /users/{userId}/wallets:
+    post:
+      tags:
+        - Wallet
+      summary: Create wallet
+      description: ''
+      operationId: createWallet
+      parameters:
+        - name: userId
+          in: path
+          description: 'Identifier of the user'
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Create user 
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Wallet'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Wallet'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Wallet'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/IdResponse'
+    get:
+      tags:
+        - Wallet
+      summary: Get all wallets
+      description: ''
+      operationId: getWallets
+      parameters:
+        - name: userId
+          in: path
+          description: 'Identifier of the user'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WalletGetResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/WalletGetResponse'
+        '400':
+          description: Invalid user id supplied
+          
+  /users/{userId}/wallets/{walletId}:
+    get:
+      tags:
+        - Wallet
+      summary: Get wallet by wallet id
+      description: ''
+      operationId: getWalletByName
+      parameters:
+        - name: userId
+          in: path
+          description: 'Identifier of the user'
+          required: true
+          schema:
+            type: string
+        - name: walletId
+          in: path
+          description: 'Identifier of the wallet'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WalletGetByIdResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/WalletGetByIdResponse'
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
+    put:
+      tags:
+        - Wallet
+      summary: Update wallet
+      description: ''
+      operationId: updateWallet
+      parameters:
+        - name: userId
+          in: path
+          description: 'Identifier of the user'
+          required: true
+          schema:
+            type: string
+        - name: walletId
+          in: path
+          description: 'Identifier of the wallet'
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Update an existent wallet
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Wallet'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Wallet'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Wallet'
+      responses:
+        default:
+          description: successful operation
+  /assets:
+    get:
+      tags:
+        - Asset
+      summary: Get Assets
+      description: ''
+      operationId: getAssets
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssetGetResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/AssetGetResponse'
+  /assets/{assetId}:
+    get:
+      tags:
+        - Asset
+      summary: Get asset by user id
+      description: ''
+      operationId: getAssetById
+      parameters:
+        - name: assetId
+          in: path
+          description: 'Identifier of the asset'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssetGetByIdResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/AssetGetByIdResponse'
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
+components:
+  schemas:
+    AssetGetResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/AssetResponse'
+      xml:
+        name: user
+    AssetResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 4cb13ebc-f301-498d-b3de-7bbb9c880abe
+        symbol:
+          type: string
+          example: BTC
+        blockchain:
+          type: string
+          example: Bitcoin
+      xml:
+        name: wallet
+    AssetGetByIdResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/AssetResponse'
+      xml:
+        name: wallet
+    Wallet:
+      type: object
+      properties:
+        address:
+          type: string
+          example: 0x123456789
+        balance:
+          type: number
+          example: 5
+        assetId:
+          type: string
+          example: 4cb13ebc-f301-498d-b3de-7bbb9c880abe
+        userId:
+          type: string
+          example: e0fd185a-ff7d-4fce-8283-e414f7f95088
+      xml:
+        name: wallet
+    WalletResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          example: aa137b15-3850-4544-b481-bbfa6ebb41b1
+        address:
+          type: string
+          example: 0x123456789
+        balance:
+          type: number
+          example: 5
+        assetId:
+          type: string
+          example: 4cb13ebc-f301-498d-b3de-7bbb9c880abe
+        userId:
+          type: string
+          example: e0fd185a-ff7d-4fce-8283-e414f7f95088
+      xml:
+        name: wallet
+    WalletGetResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/WalletResponse'
+      xml:
+        name: wallet
+    WalletGetByIdResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/WalletResponse'
+      xml:
+        name: wallet
+    User:
+      type: object
+      properties:
+        idNumber:
+          type: string
+          example: 00000000A
+        firstName:
+          type: string
+          example: John
+        lastName:
+          type: string
+          example: James
+        email:
+          type: string
+          example: john@email.com
+        phone:
+          type: string
+          example: '12345'
+      xml:
+        name: user
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          example: e0fd185a-ff7d-4fce-8283-e414f7f95088
+        idNumber:
+          type: string
+          example: 00000000A
+        firstName:
+          type: string
+          example: John
+        lastName:
+          type: string
+          example: James
+        email:
+          type: string
+          example: john@email.com
+        phone:
+          type: string
+          example: '12345'
+      xml:
+        name: user
+    IdResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          example: e0fd185a-ff7d-4fce-8283-e414f7f95088
+      xml:
+        name: user
+    UserGetByIdResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/UserResponse'
+      xml:
+        name: user
+    UserGetResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserResponse'
+      xml:
+        name: user
+  requestBodies:
+    UserArray:
+      description: List of user object
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/User'
