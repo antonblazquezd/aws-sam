@@ -57,14 +57,21 @@ exports.getUsers = async (event, context) => {
 
 exports.postUser = async (event, context) => {
 
-    const uuid = uuidv4();
-    const body = JSON.parse(event.body)
+    if (!isValidBody(event)) {
+        return response(400, { message: "Error: Invalid body fields" });
+    }
 
+    const uuid = uuidv4();
+    const bodyParsed = JSON.parse(event.body);
     const params = {
         TableName: UserTableName,
         Item: {
             id: uuid,
-            name: body.name,
+            idNumber: bodyParsed.idNumber,
+            firstName: bodyParsed.firstName,
+            lastName: bodyParsed.lastName,
+            email: bodyParsed.email,
+            phone: bodyParsed.phone,
         },
     };
 
@@ -81,6 +88,18 @@ function isValidRequest(event) {
     );
 }
 
+function isValidBody(event) {
+    const body = JSON.parse(event.body);
+    return (
+        body &&
+        body.idNumber &&
+        body.firstName &&
+        body.lastName &&
+        body.email &&
+        body.phone
+    );
+}
+
 
 function getUser(userId) {
     let params = {
@@ -88,7 +107,7 @@ function getUser(userId) {
         Key: {
             id: userId,
         },
-        AttributesToGet: ["id", "name"]
+        AttributesToGet: ["id", "idNumber", "firstName", "lastName", "email", "phone"]
     };
 
     return docClient.get(params);
