@@ -26,6 +26,8 @@ tags:
     description: User endpoint
   - name: Wallet
     description: Wallet endpoint
+  - name: Operation
+    description: Operation endpoint
   - name: Asset
     description: Asset endpoint
 paths:
@@ -63,7 +65,7 @@ paths:
         - User
       summary: Get all users
       description: ''
-      operationId: loginUser
+      operationId: getUsers
       responses:
         '200':
           description: successful operation
@@ -82,7 +84,7 @@ paths:
         - User
       summary: Get user by user id
       description: ''
-      operationId: getUserByName
+      operationId: getUserById
       parameters:
         - name: userId
           in: path
@@ -148,7 +150,7 @@ paths:
           schema:
             type: string
       requestBody:
-        description: Create user 
+        description: Create wallet 
         content:
           application/json:
             schema:
@@ -201,7 +203,7 @@ paths:
         - Wallet
       summary: Get wallet by wallet id
       description: ''
-      operationId: getWalletByName
+      operationId: getWalletById
       parameters:
         - name: userId
           in: path
@@ -308,8 +310,163 @@ paths:
           description: Invalid username supplied
         '404':
           description: User not found
+          
+  /users/{userId}/wallets/{walletId}/operations:
+    post:
+      tags:
+        - Operation
+      summary: Create operation
+      description: ''
+      operationId: createOperation
+      parameters:
+        - name: userId
+          in: path
+          description: 'Identifier of the user'
+          required: true
+          schema:
+            type: string
+        - name: walletId
+          in: path
+          description: 'Identifier of the wallet'
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Create operation 
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Operation'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Operation'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Operation'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/IdResponse'
+    get:
+      tags:
+        - Operation
+      summary: Get all operations
+      description: ''
+      operationId: getOperations
+      parameters:
+        - name: userId
+          in: path
+          description: 'Identifier of the user'
+          required: true
+          schema:
+            type: string
+        - name: walletId
+          in: path
+          description: 'Identifier of the wallet'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationGetResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/OperationGetResponse'
+        '400':
+          description: Invalid request
+  /users/{userId}/wallets/{walletId}/operations/{operationId}:
+    get:
+      tags:
+        - Operation
+      summary: Get operation by operation id
+      description: ''
+      operationId: getOperationById
+      parameters:
+        - name: userId
+          in: path
+          description: 'Identifier of the user'
+          required: true
+          schema:
+            type: string
+        - name: walletId
+          in: path
+          description: 'Identifier of the wallet'
+          required: true
+          schema:
+            type: string
+        - name: operationId
+          in: path
+          description: 'Identifier of the operation'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationGetByIdResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/OperationGetByIdResponse'
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
 components:
   schemas:
+    Operation:
+      type: object
+      properties:
+        amount:
+          type: number
+          example: 5.5
+        type:
+          type: string
+          example: buy
+      xml:
+        name: operation
+    OperationGetResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/OperationResponse'
+      xml:
+        name: operation
+    OperationResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 4cb13ebc-f301-498d-b3de-7bbb9c880abe
+        amount:
+          type: number
+          example: 5.5
+        type:
+          type: string
+          example: buy
+      xml:
+        name: operation
+    OperationGetByIdResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/OperationResponse'
+      xml:
+        name: wallet
     AssetGetResponse:
       type: object
       properties:
