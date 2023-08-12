@@ -57,15 +57,18 @@ exports.getAssets = async (event, context) => {
 
 exports.postAsset = async (event, context) => {
 
-    const uuid = uuidv4();
-    const body = JSON.parse(event.body)
+    if (!isValidBody(event)) {
+        return response(400, { message: "Error: Invalid body fields" });
+    }
 
+    const uuid = uuidv4();
+    const bodyParsed = JSON.parse(event.body);
     const params = {
         TableName: AssetTableName,
         Item: {
             id: uuid,
-            symbol: body.symbol,
-            blockchain: body.blockchain,
+            symbol: bodyParsed.symbol,
+            blockchain: bodyParsed.blockchain,
         },
     };
 
@@ -77,9 +80,16 @@ exports.postAsset = async (event, context) => {
 function isValidRequest(event) {
     return (
         event !== null &&
-        event.pathParameters !== null &&
-        event.pathParameters.symbol !== null &&
-        event.pathParameters.blockchain !== null
+        event.pathParameters !== null 
+    );
+}
+
+function isValidBody(event) {
+    const body = JSON.parse(event.body);
+    return (
+        body &&
+        body.symbol &&
+        body.blockchain
     );
 }
 
