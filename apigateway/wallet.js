@@ -4,8 +4,10 @@ const { v4: uuidv4 } = require('uuid');
 
 const INVALID_WALLET_ID = "Wallet ID is invalid";
 const INVALID_USER_ID = "User ID is invalid";
+const INVALID_ASSET_ID = "Asset ID is invalid";
 const WalletTableName = "Wallet";
 const UserTableName = "User";
+const AssetTableName = "Asset";
 
 const docClient = true ? new DocumentClient({
     endpoint: "http://host.docker.internal:8000"
@@ -53,8 +55,8 @@ exports.getWallets = async (event, context) => {
     }
     try {
         const user = await getUser(event.pathParameters.userId).promise();
-        if (!user) {
-            return response(400, { message: `Error: ${INVALID_WALLET_ID}` });
+        if (!user.Item) {
+            return response(400, { message: `Error: ${INVALID_USER_ID}` });
         }
         const wallets = await docClient.scan({ TableName: WalletTableName }).promise();
         return response(200, { data: wallets.Items });
@@ -64,33 +66,37 @@ exports.getWallets = async (event, context) => {
 }
 
 
-
-
 //---------------
 //     POST
 // ---------------
 
 exports.postWallet = async (event, context) => {
-    console.log(event.pathParameters.userId)
     if (!isValidRequest(event)) {
         return response(400, { message: "Error: Invalid request" });
     }
+    if (!isValidBody(event)) {
+        return response(400, { message: "Error: Invalid body fields" });
+    }
+    const bodyParsed = JSON.parse(event.body)
+
     const user = await getUser(event.pathParameters.userId).promise();
     if (!user.Item) {
         return response(400, { message: `Error: ${INVALID_USER_ID}` });
     }
-
+    const asset = await getAsset(bodyParsed.assetId).promise();
+    if (!asset.Item) {
+        return response(400, { message: `Error: ${INVALID_ASSET_ID}` });
+    }
+    
     const uuid = uuidv4();
-    const body = JSON.parse(event.body)
 
     const params = {
         TableName: WalletTableName,
-        // For more information about data types,
-        // see https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.NamingRulesDataTypes.html#HowItWorks.DataTypes and
-        // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Programming.LowLevelAPI.html#Programming.LowLevelAPI.DataTypeDescriptors
         Item: {
             id: uuid,
-            address: body.address,
+            address: bodyParsed.address,
+            balance: bodyParsed.balance,
+            assetId: bodyParsed.assetId,
             userId: user.Item.id,
         },
     };
@@ -104,7 +110,17 @@ function isValidRequest(event) {
     return (
         event !== null &&
         event.pathParameters !== null &&
-        event.pathParameters.userId !== null 
+        event.pathParameters.userId !== null
+    );
+}
+
+function isValidBody(event) {
+    const body = JSON.parse(event.body);
+    return (
+        body &&
+        body.address &&
+        body.balance &&
+        body.assetId
     );
 }
 
@@ -115,7 +131,7 @@ function getUser(userId) {
         Key: {
             id: userId,
         },
-        AttributesToGet: ["id", "name", "dni"]
+        AttributesToGet: ["id", "idNumber", "firstName", "lastName", "email", "phone"]
     };
 
     return docClient.get(params);
@@ -127,7 +143,19 @@ function getWallet(walletId) {
         Key: {
             id: walletId,
         },
-        AttributesToGet: ["id", "address", "balance", "userId", "assetId"]
+        AttributesToGet: ["id", "address", "balance", "assetId"]
+    };
+
+    return docClient.get(params);
+}
+
+function getAsset(assetId) {
+    let params = {
+        TableName: AssetTableName,
+        Key: {
+            id: assetId,
+        },
+        AttributesToGet: ["id", "symbol", "blockchain"]
     };
 
     return docClient.get(params);
